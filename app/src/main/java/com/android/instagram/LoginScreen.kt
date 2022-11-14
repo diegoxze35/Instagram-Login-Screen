@@ -1,5 +1,6 @@
 package com.android.instagram
 
+import android.app.Activity
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -18,8 +19,11 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.TextField
@@ -28,10 +32,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -48,8 +55,11 @@ import com.android.instagram.ui.theme.BackgroundTextFieldColorNight
 import com.android.instagram.ui.theme.BorderColor
 import com.android.instagram.ui.theme.ColorTextButton
 import com.android.instagram.ui.theme.ButtonBackgroundColor
+import com.android.instagram.ui.theme.Dark
 import com.android.instagram.ui.theme.DisableButtonColorNight
 import com.android.instagram.ui.theme.Shapes
+import com.android.instagram.ui.theme.White
+import java.util.*
 
 @Composable
 fun MainScreen() {
@@ -58,7 +68,7 @@ fun MainScreen() {
 			.fillMaxSize()
 			.padding(8.dp)
 	) {
-		MyIcon(modifier = Modifier.align(Alignment.TopEnd))
+		AppBar(modifier = Modifier.align(Alignment.TopCenter))
 		MainContent(
 			modifier = Modifier
 				.align(Alignment.Center)
@@ -133,7 +143,9 @@ fun MainContent(modifier: Modifier) {
 				Icon(
 					painter = painterResource(
 						id = if (showPassword) R.drawable.not_show else R.drawable.show
-					), contentDescription = ""
+					),
+					contentDescription = "",
+					tint = if (!showPassword) ButtonBackgroundColor else Color.Gray
 				)
 			}
 		}, if (showPassword) VisualTransformation.None else PasswordVisualTransformation()
@@ -205,7 +217,7 @@ fun LoginButton(isEnabled: Boolean, modifier: Modifier) {
 fun ButtonForgotPassword(modifier: Modifier) {
 	TextButton(onClick = {}, modifier = modifier) {
 		val size = 11.sp
-		val padding = Modifier.padding(horizontal = 2.dp)
+		val padding = Modifier.padding(horizontal = 1.dp)
 		Text(
 			text = stringResource(R.string.forgot),
 			color = Color.Gray,
@@ -247,8 +259,7 @@ fun MyTextField(
 		trailingIcon = trailingIcon,
 		visualTransformation = visualTransformation,
 		colors = TextFieldDefaults.textFieldColors(
-			backgroundColor =
-			if (isSystemInDarkTheme()) BackgroundTextFieldColorNight
+			backgroundColor = if (isSystemInDarkTheme()) BackgroundTextFieldColorNight
 			else BackgroundTextFieldColor,
 			focusedIndicatorColor = Color.Transparent,
 			unfocusedIndicatorColor = Color.Transparent
@@ -268,10 +279,67 @@ fun Logo(@DrawableRes logo: Int = R.drawable.insta, modifier: Modifier) {
 }
 
 @Composable
-fun MyIcon(@DrawableRes icon: Int = R.drawable.ic_baseline_close_24, modifier: Modifier) {
-	Icon(
-		modifier = modifier.clickable { },
-		painter = painterResource(id = icon),
-		contentDescription = stringResource(R.string.close_app),
-	)
+fun AppBar(modifier: Modifier) {
+	val context = LocalContext.current
+	val conf = LocalConfiguration.current
+	val locale = conf.locales[0]
+	var isExpanded by remember {
+		mutableStateOf(false)
+	}
+	var selectedLanguage by rememberSaveable {
+		mutableStateOf(locale.displayLanguage.lowercase())
+	}
+	val languages = listOf("english", "español")
+	Row(modifier = modifier) {
+		val weightModifier = Modifier.weight(1f)
+		val color = if (isSystemInDarkTheme()) Dark else White
+		Spacer(modifier = weightModifier)
+		OutlinedTextField(
+			value = selectedLanguage,
+			trailingIcon = {
+				Icon(
+					painter = painterResource(id = R.drawable.ic_baseline_keyboard_arrow_down_24),
+					contentDescription = ""
+				)
+			},
+			colors = TextFieldDefaults.textFieldColors(
+				disabledTextColor = Color.Gray,
+				backgroundColor = color,
+				unfocusedIndicatorColor = color
+			),
+			onValueChange = { newLanguage -> selectedLanguage = newLanguage },
+			readOnly = true,
+			enabled = false,
+			modifier = Modifier
+				.weight(1f)
+				.clickable {
+					isExpanded = true
+				},
+		)
+		Spacer(modifier = weightModifier)
+		DropdownMenu(
+			expanded = isExpanded,
+			onDismissRequest = { isExpanded = false },
+			modifier = Modifier.fillMaxWidth()
+		) {
+			languages.forEach {
+				DropdownMenuItem(onClick = {
+					val lang = if (it == languages[0]) Locale("en") else Locale("es")
+					conf.apply {
+						setLocale(lang)
+						setLayoutDirection(lang)
+						context.createConfigurationContext(this)
+					}
+					(context as Activity).run {
+						finish()
+						startActivity(intent)
+					}
+					isExpanded = false
+					selectedLanguage = it
+				}) {
+					Text(text = it)
+				}
+			}
+		}
+	}
 }
