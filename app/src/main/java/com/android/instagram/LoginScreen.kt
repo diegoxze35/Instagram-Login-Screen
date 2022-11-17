@@ -328,12 +328,12 @@ fun AppBar(modifier: Modifier) {
 					conf.apply {
 						setLocale(lang)
 						setLayoutDirection(lang)
-						context.createConfigurationContext(this)
+						context.resources.updateConfiguration(
+							this,
+							context.resources.displayMetrics
+						)
 					}
-					(context as Activity).run {
-						finish()
-						startActivity(intent)
-					}
+					(context as Activity).recreate()
 					isExpanded = false
 					selectedLanguage = it
 				}) {

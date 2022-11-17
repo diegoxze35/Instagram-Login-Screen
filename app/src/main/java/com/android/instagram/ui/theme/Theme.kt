@@ -5,6 +5,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 private val DarkColorPalette = darkColors(
 	primary = Purple200,
@@ -31,9 +32,12 @@ private val LightColorPalette = lightColors(
 
 @Composable
 fun InstagramTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
+	val uiController = rememberSystemUiController()
 	val colors = if (darkTheme) {
+		uiController.setStatusBarColor(Dark)
 		DarkColorPalette
 	} else {
+		uiController.setStatusBarColor(White)
 		LightColorPalette
 	}
 	
