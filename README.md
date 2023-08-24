@@ -4,5 +4,7 @@ Pantalla de inicio de sesión usando Jetpack Compose
 Proyecto para practicar con Jetpack Compose recreando una pantalla de inicio de sesión de la red social instagram, 
 con funcionalidad básica (habilitación, desabilitación de botón login y cambio de idioma)
 
-![Screenshot_20221116-231445_Instagram](https://user-images.githubusercontent.com/115143423/202362219-7fc05194-6286-45ee-8a1a-b6a126cdf21c.jpg)
-![Screenshot_20221116-231437_Instagram](https://user-images.githubusercontent.com/115143423/202362224-9295e6dc-1bdf-4ae6-8cc1-ce106b8b4f9c.jpg)
+| **Tema Claro** | **Tema oscuro** |
+|--------------| --------------|
+| ![Screenshot_20230824-162037_Instagram](https://github.com/diegoxze35/Instagram-Login-Screen/assets/115143423/c77c5ad9-e08c-428c-b004-f51bdff2d6ac) | ![Screenshot_20230824-162025_Instagram](https://github.com/diegoxze35/Instagram-Login-Screen/assets/115143423/261fcb9b-35c5-46d3-93d2-fcf81238a6fd) |
+
