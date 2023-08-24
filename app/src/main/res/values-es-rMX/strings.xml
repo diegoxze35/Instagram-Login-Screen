@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="app_name">Instagram</string>
-	<string name="main_logo">Logo Principal</string>
-	<string name="or_message">O</string>
-	<string name="facebook_icon">Icono de Facebook</string>
-	<string name="forgot">¿Olvidaste tus datos de inicio de sesión?</string>
-	<string name="get_help">Obtén ayuda</string>
+	<string name="icon_instagram">Icono de Instagram</string>
+	<string name="icon_meta">Icono de Meta</string>
+	<string name="language">Español</string>
+	<string name="forgot_password">¿Olvidaste tu contraseña?</string>
 	<string name="close_app">Cerrar App</string>
-	<string name="continue_with_facebook">Continuar con Facebook</string>
-	<string name="phone_email_or_username">Teléfono, correo electrónico o usuario</string>
-	<string name="not_have_account">¿No tienes una cuenta?</string>
-	<string name="sing_up">Regístrate</string>
+	<string name="phone_email_or_username">Nombre de usuario, correo o celular</string>
+	<string name="create_new_account">Crear cuenta nueva</string>
 	<string name="log_in">Iniciar sesión</string>
 	<string name="password">Contraseña</string>
+	<string name="select_your_language">Selecciona tu idioma</string>
+	<string name="close_selection">Cerrar selección de lenguajes</string>
 </resources>

@@ -2,16 +2,13 @@ package com.android.instagram.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple200 = Color(0xFFBB86FC)
-val Purple500 = Color(0xFF6200EE)
-val Purple700 = Color(0xFF3700B3)
-val Teal200 = Color(0xFF03DAC5)
-val BackgroundTextFieldColor = Color(0xFFF4F4F4)
-val BackgroundTextFieldColorNight = Color(0xFF424242)
-val BorderColor = Color(0xFFDBDBDB)
-val DisableButtonColor = Color(0xFFDBF2FF)
-val ButtonBackgroundColor = Color(0xFF0396E8)
-val DisableButtonColorNight = Color(0xFF044C74)
-val ColorTextButton = Color(0xFF003A5B)
-val Dark = Color(0xFF000000)
-val White = Color(0xFFFFFFFF)
+val Primary = Color(red = 0, green = 100, blue = 224) /*Primary*/
+val DarkSurface = Color(0xFF0F2030) /*Surface*/
+val WhiteSurface = Color(0xFFEBF3FE) /*Surface*/
+val PrimaryVariantColor = Color(red = 253, green = 250, blue = 243, alpha = 255) /*Primary Variant Light*/
+val SecondaryVariantColor = Color(red = 238, green = 251, blue = 242, alpha = 255) /*Secondary Variant Light*/
+val PrimaryVariantDark = Color(red = 31, green = 31, blue = 31, alpha = 255) /*Primary Variant Dark*/
+val SecondaryVariantDark = Color(red = 17, green = 39, blue = 36, alpha = 255) /*Secondary Variant Dark*/
+val BackgroundDark = Color(red = 28, green = 42, blue = 51) /*Background*/
+val OnBackgroundDark = Color(0xFF75818B) /*onBackground Dark*/
+val OnBackground = Color(0xFFA9B1B4) /*onBackground Dark*/

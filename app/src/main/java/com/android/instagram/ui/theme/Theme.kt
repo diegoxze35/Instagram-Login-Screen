@@ -5,20 +5,27 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 private val DarkColorPalette = darkColors(
-	primary = Purple200,
-	primaryVariant = Purple700,
-	secondary = Teal200,
-	background = Dark
+	primary = Primary,
+	onPrimary = Color.White,
+	background = BackgroundDark,
+	onBackground = OnBackgroundDark,
+	primaryVariant = PrimaryVariantDark,
+	secondaryVariant = SecondaryVariantDark,
+	surface = DarkSurface,
 )
 
 private val LightColorPalette = lightColors(
-	primary = Purple500,
-	primaryVariant = Purple700,
-	secondary = Teal200,
-	background = White
+	primary = Primary,
+	onPrimary = Color.White,
+	background = Color.White,
+	onBackground = OnBackground,
+	primaryVariant = PrimaryVariantColor,
+	secondaryVariant = SecondaryVariantColor,
+	surface = WhiteSurface,
 	
 	/* Other default colors to override
     background = Color.White,
@@ -34,16 +41,16 @@ private val LightColorPalette = lightColors(
 fun InstagramTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
 	val uiController = rememberSystemUiController()
 	val colors = if (darkTheme) {
-		uiController.setStatusBarColor(Dark)
+		uiController.setStatusBarColor(DarkSurface)
 		DarkColorPalette
 	} else {
-		uiController.setStatusBarColor(White)
+		uiController.setStatusBarColor(WhiteSurface)
 		LightColorPalette
 	}
 	
 	MaterialTheme(
 		colors = colors,
-		typography = Typography,
+		typography = InstagramTypography,
 		shapes = Shapes,
 		content = content
 	)

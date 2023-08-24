@@ -1,345 +1,264 @@
 package com.android.instagram
 
-import android.app.Activity
-import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Divider
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
-import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ModalBottomSheetState
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.android.instagram.ui.theme.DisableButtonColor
-import com.android.instagram.ui.theme.BackgroundTextFieldColor
-import com.android.instagram.ui.theme.BackgroundTextFieldColorNight
-import com.android.instagram.ui.theme.BorderColor
-import com.android.instagram.ui.theme.ColorTextButton
-import com.android.instagram.ui.theme.ButtonBackgroundColor
-import com.android.instagram.ui.theme.Dark
-import com.android.instagram.ui.theme.DisableButtonColorNight
-import com.android.instagram.ui.theme.Shapes
-import com.android.instagram.ui.theme.White
-import java.util.*
+import com.android.instagram.ui.theme.OnBackground
+import com.android.instagram.ui.theme.OnBackgroundDark
+import kotlinx.coroutines.launch
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun LoginScreen(
+	modifier: Modifier = Modifier,
+	userLogin: String,
+	onChangeUserLogin: (String) -> Unit,
+	password: String,
+	onChangePassword: (String) -> Unit,
+	onClearLogin: () -> Unit,
+	modalBottomSheetState: ModalBottomSheetState
+) {
+	val padding = PaddingValues(
+		vertical = dimensionResource(id = R.dimen.small_dp),
+		horizontal = dimensionResource(id = R.dimen.medium_dp)
+	)
+	Column(
+		modifier = modifier.padding(padding),
+		horizontalAlignment = Alignment.CenterHorizontally
+	) {
+		TopContent(modifier = Modifier.weight(1f), modalBottomSheetState)
+		val interactionSourceLogin = remember { MutableInteractionSource() }
+		val isFocusedLogin by interactionSourceLogin.collectIsFocusedAsState()
+		InstagramTextField(
+			value = userLogin,
+			onValueChange = onChangeUserLogin,
+			textResource = R.string.phone_email_or_username,
+			visualTransformation = VisualTransformation.None,
+			interactionSource = interactionSourceLogin,
+			keyboardOptions = KeyboardOptions(
+				keyboardType = KeyboardType.Email,
+				imeAction = ImeAction.Next
+			),
+			trailingIcon = if (isFocusedLogin && userLogin.isNotEmpty()) ({
+				IconButton(onClick = onClearLogin) {
+					Icon(imageVector = Icons.Default.Clear, contentDescription = null)
+				}
+			}) else null
+		)
+		Spacer(modifier = Modifier.height(height = dimensionResource(id = R.dimen.small_dp) / 2))
+		val passwordInteractionSource = remember { MutableInteractionSource() }
+		val isFocusedPassword by passwordInteractionSource.collectIsFocusedAsState()
+		var visualTransformation by remember {
+			mutableStateOf<VisualTransformation>(PasswordVisualTransformation())
+		}
+		InstagramTextField(
+			value = password,
+			onValueChange = onChangePassword,
+			textResource = R.string.password,
+			visualTransformation = visualTransformation,
+			keyboardOptions = KeyboardOptions(
+				keyboardType = KeyboardType.Password,
+				imeAction = ImeAction.Done
+			),
+			interactionSource = passwordInteractionSource,
+			trailingIcon = if (isFocusedPassword) ({
+				val (icon, newTransformation) =
+					(visualTransformation is PasswordVisualTransformation).run {
+					if (this) Icons.Default.Visibility to VisualTransformation.None
+					else Icons.Default.VisibilityOff to PasswordVisualTransformation()
+				}
+				IconButton(onClick = {
+					visualTransformation = newTransformation
+				}) {
+					Icon(
+						imageVector = icon,
+						contentDescription = null
+					)
+				}
+			}) else null
+		)
+		OutlinedButton(
+			onClick = {},
+			shape = MaterialTheme.shapes.medium,
+			modifier = Modifier.fillMaxWidth(),
+			colors = ButtonDefaults.outlinedButtonColors(backgroundColor = MaterialTheme.colors.primary)
+		) {
+			Text(text = stringResource(id = R.string.log_in), color = Color.White)
+		}
+		TextButton(onClick = {}) {
+			Text(
+				text = stringResource(id = R.string.forgot_password),
+				color = MaterialTheme.colors.onSurface
+			)
+		}
+		BottomContent(modifier = Modifier.weight(1f))
+	}
+}
+
 
 @Composable
-fun MainScreen() {
-	Box(
-		modifier = Modifier
-			.fillMaxSize()
-			.padding(8.dp)
+@OptIn(ExperimentalMaterialApi::class)
+private fun TopContent(
+	modifier: Modifier = Modifier,
+	modalBottomSheetState: ModalBottomSheetState
+) {
+	val coroutine = rememberCoroutineScope()
+	Column(
+		modifier,
+		horizontalAlignment = Alignment.CenterHorizontally,
+		verticalArrangement = Arrangement.SpaceEvenly
 	) {
-		AppBar(modifier = Modifier.align(Alignment.TopCenter))
-		MainContent(
-			modifier = Modifier
-				.align(Alignment.Center)
-				.padding(horizontal = 22.dp)
+		Text(
+			text = stringResource(id = R.string.language),
+			color = MaterialTheme.colors.onBackground,
+			style = MaterialTheme.typography.caption,
+			modifier = Modifier.clickable {
+				coroutine.launch {
+					modalBottomSheetState.show()
+				}
+			}
 		)
-		BottomContent(
-			Modifier
-				.fillMaxWidth()
-				.align(Alignment.BottomCenter)
+		Spacer(modifier = Modifier)
+		Image(
+			painter = painterResource(id = R.drawable.instagram),
+			contentDescription = stringResource(id = R.string.icon_instagram)
 		)
 	}
 }
 
 @Composable
-fun BottomContent(modifier: Modifier) {
-	Column(modifier = modifier) {
-		Divider()
-		TextButton(
-			onClick = { }, modifier = Modifier.align(Alignment.CenterHorizontally)
-		) {
-			val padding = Modifier.padding(horizontal = 2.dp)
-			val textSize = 11.sp
-			Text(
-				text = stringResource(R.string.not_have_account),
-				modifier = padding,
-				fontSize = textSize,
-				color = Color.Gray
+private fun BottomContent(modifier: Modifier = Modifier) {
+	Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+		Spacer(modifier = Modifier.weight(1f))
+		OutlinedButton(
+			onClick = { /*TODO*/ },
+			shape = MaterialTheme.shapes.small,
+			modifier = Modifier.fillMaxWidth(),
+			border = BorderStroke(
+				width = dimensionResource(id = R.dimen.border_dp),
+				color = MaterialTheme.colors.primary
 			)
+		) {
 			Text(
-				text = stringResource(R.string.sing_up),
-				modifier = padding,
-				fontSize = textSize,
-				color = if (isSystemInDarkTheme()) Color.White else ColorTextButton
+				text = stringResource(id = R.string.create_new_account),
+			)
+		}
+		Row(verticalAlignment = Alignment.CenterVertically) {
+			Icon(
+				painter = painterResource(id = R.drawable.meta),
+				contentDescription = stringResource(
+					id = R.string.icon_meta
+				)
+			)
+			Spacer(modifier = Modifier.width(width = dimensionResource(id = R.dimen.border_dp)))
+			Text(
+				text = stringResource(id = R.string.meta),
+				style = MaterialTheme.typography.caption
 			)
 		}
 	}
 }
 
 @Composable
-fun MainContent(modifier: Modifier) {
-	var emailInput by rememberSaveable {
-		mutableStateOf(String())
-	}
-	var passwordInput by rememberSaveable {
-		mutableStateOf(String())
-	}
-	var isLoginButtonEnabled by rememberSaveable {
-		mutableStateOf(false)
-	}
-	var showPassword by rememberSaveable {
-		mutableStateOf(false)
-	}
-	val spaceBetweenText: Dp = 12.dp
-	Column(modifier = modifier) {
-		Logo(modifier = Modifier.align(Alignment.CenterHorizontally))
-		Spacer(modifier = modifier.size(16.dp))
-		MyTextField(emailInput, { newInput ->
-			emailInput = newInput
-			isLoginButtonEnabled = emailInput.isNotBlank() && passwordInput.isNotBlank()
-		}, {
-			Text(text = stringResource(R.string.phone_email_or_username))
-		}, KeyboardOptions(keyboardType = KeyboardType.Email), null, VisualTransformation.None
-		)
-		Spacer(modifier = modifier.size(spaceBetweenText))
-		MyTextField(passwordInput, { newPassword ->
-			passwordInput = newPassword
-			isLoginButtonEnabled = emailInput.isNotBlank() && passwordInput.isNotBlank()
-		}, {
-			Text(text = stringResource(R.string.password))
-		}, KeyboardOptions(keyboardType = KeyboardType.Password), {
-			IconButton(onClick = { showPassword = !showPassword }) {
-				Icon(
-					painter = painterResource(
-						id = if (showPassword) R.drawable.not_show else R.drawable.show
-					),
-					contentDescription = "",
-					tint = if (!showPassword) ButtonBackgroundColor else Color.Gray
-				)
-			}
-		}, if (showPassword) VisualTransformation.None else PasswordVisualTransformation()
-		)
-		Spacer(modifier = modifier.size(spaceBetweenText))
-		LoginButton(
-			isLoginButtonEnabled, Modifier.align(Alignment.CenterHorizontally)
-		)
-		val space: Dp = 8.dp
-		Spacer(modifier = modifier.size(space))
-		ButtonForgotPassword(Modifier.align(Alignment.CenterHorizontally))
-		TextDivider()
-		Spacer(modifier = modifier.size(space))
-		ButtonFacebook()
-	}
-}
-
-@Composable
-fun ButtonFacebook(@DrawableRes icon: Int = R.drawable.face_icon) {
-	Button(
-		onClick = { }, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(
-			backgroundColor = ButtonBackgroundColor, contentColor = Color.White
-		), shape = Shapes.small
-	) {
-		Image(
-			painter = painterResource(id = icon),
-			contentDescription = stringResource(R.string.facebook_icon),
-			modifier = Modifier.padding(end = 8.dp)
-		)
-		Text(stringResource(R.string.continue_with_facebook), fontWeight = FontWeight.Bold)
-	}
-}
-
-@Composable
-fun TextDivider() {
-	Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-		val modifier = Modifier
-			.weight(1f)
-			.size(1.dp)
-		Divider(modifier = modifier)
-		Text(
-			text = stringResource(R.string.or_message),
-			fontSize = 12.sp,
-			modifier = Modifier.padding(horizontal = 24.dp),
-			textAlign = TextAlign.Center
-		)
-		Divider(modifier = modifier)
-	}
-}
-
-@Composable
-fun LoginButton(isEnabled: Boolean, modifier: Modifier) {
-	Button(
-		onClick = { },
-		enabled = isEnabled,
-		modifier = modifier.fillMaxWidth(),
-		colors = ButtonDefaults.buttonColors(
-			backgroundColor = ButtonBackgroundColor,
-			contentColor = Color.White,
-			disabledBackgroundColor = if (isSystemInDarkTheme()) DisableButtonColorNight else DisableButtonColor,
-			disabledContentColor = if (isSystemInDarkTheme()) Color.Gray else Color.White
-		)
-	) {
-		Text(text = stringResource(R.string.log_in), fontWeight = FontWeight.Bold, fontSize = 14.sp)
-	}
-}
-
-@Composable
-fun ButtonForgotPassword(modifier: Modifier) {
-	TextButton(onClick = {}, modifier = modifier) {
-		val size = 11.sp
-		val padding = Modifier.padding(horizontal = 1.dp)
-		Text(
-			text = stringResource(R.string.forgot),
-			color = Color.Gray,
-			fontSize = size,
-			modifier = padding
-		)
-		Text(
-			text = stringResource(R.string.get_help),
-			color = if (isSystemInDarkTheme()) Color.White else ColorTextButton,
-			fontWeight = FontWeight.Bold,
-			fontSize = size,
-			modifier = padding
-		)
-	}
-}
-
-@Composable
-fun MyTextField(
-	text: String,
-	onTextChange: (String) -> Unit,
-	placeholder: @Composable (() -> Unit),
+private fun InstagramTextField(
+	value: String,
+	onValueChange: (String) -> Unit,
+	@StringRes textResource: Int,
+	interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+	visualTransformation: VisualTransformation,
 	keyboardOptions: KeyboardOptions,
-	trailingIcon: @Composable (() -> Unit)?,
-	visualTransformation: VisualTransformation
+	trailingIcon: (@Composable () -> Unit)?
 ) {
+	val isFocused by interactionSource.collectIsFocusedAsState()
+	val isSystemInDarkTheme = isSystemInDarkTheme()
+	val borderColor = MaterialTheme.colors.onBackground
+	val colorFocused: Color by remember {
+		derivedStateOf {
+			when {
+				isFocused && isSystemInDarkTheme -> OnBackground
+				isFocused -> OnBackgroundDark
+				else -> borderColor
+			}
+		}
+	}
 	TextField(
-		value = text,
-		onValueChange = onTextChange,
+		value = value,
+		singleLine = true,
+		interactionSource = interactionSource,
+		onValueChange = onValueChange,
+		colors = TextFieldDefaults.outlinedTextFieldColors(
+			backgroundColor = MaterialTheme.colors.background,
+			textColor = MaterialTheme.colors.onSurface,
+			unfocusedBorderColor = Color.Transparent,
+			focusedBorderColor = Color.Transparent,
+			focusedLabelColor = MaterialTheme.colors.onBackground,
+		),
+		shape = MaterialTheme.shapes.medium,
+		label = {
+			Text(
+				text = stringResource(id = textResource),
+				style = MaterialTheme.typography.body1,
+				color = colorFocused
+			)
+		},
 		modifier = Modifier
 			.fillMaxWidth()
 			.border(
-				width = (1).dp,
-				if (!isSystemInDarkTheme()) BorderColor else BackgroundTextFieldColorNight,
-				shape = RoundedCornerShape(5.dp)
+				border = BorderStroke(
+					width = dimensionResource(id = R.dimen.border_dp),
+					color = colorFocused
+				),
+				shape = MaterialTheme.shapes.medium
 			),
-		singleLine = true,
-		placeholder = placeholder,
-		keyboardOptions = keyboardOptions,
-		trailingIcon = trailingIcon,
 		visualTransformation = visualTransformation,
-		colors = TextFieldDefaults.textFieldColors(
-			backgroundColor = if (isSystemInDarkTheme()) BackgroundTextFieldColorNight
-			else BackgroundTextFieldColor,
-			focusedIndicatorColor = Color.Transparent,
-			unfocusedIndicatorColor = Color.Transparent
-		),
+		keyboardOptions = keyboardOptions,
+		trailingIcon = trailingIcon
 	)
-}
-
-@Composable
-fun Logo(@DrawableRes logo: Int = R.drawable.insta, modifier: Modifier) {
-	Image(
-		modifier = modifier,
-		painter = painterResource(id = logo),
-		contentDescription = stringResource(
-			R.string.main_logo
-		)
-	)
-}
-
-@Composable
-fun AppBar(modifier: Modifier) {
-	val context = LocalContext.current
-	val conf = LocalConfiguration.current
-	val locale = conf.locales[0]
-	var isExpanded by remember {
-		mutableStateOf(false)
-	}
-	var selectedLanguage by rememberSaveable {
-		mutableStateOf(locale.displayLanguage.lowercase())
-	}
-	val languages = listOf("english", "español")
-	Row(modifier = modifier) {
-		val weightModifier = Modifier.weight(1f)
-		val color = if (isSystemInDarkTheme()) Dark else White
-		Spacer(modifier = weightModifier)
-		OutlinedTextField(
-			value = selectedLanguage,
-			trailingIcon = {
-				Icon(
-					painter = painterResource(id = R.drawable.ic_baseline_keyboard_arrow_down_24),
-					contentDescription = ""
-				)
-			},
-			colors = TextFieldDefaults.textFieldColors(
-				disabledTextColor = Color.Gray,
-				backgroundColor = color,
-				unfocusedIndicatorColor = color
-			),
-			onValueChange = { newLanguage -> selectedLanguage = newLanguage },
-			readOnly = true,
-			enabled = false,
-			modifier = Modifier
-				.weight(1f)
-				.clickable {
-					isExpanded = true
-				},
-		)
-		Spacer(modifier = weightModifier)
-		DropdownMenu(
-			expanded = isExpanded,
-			onDismissRequest = { isExpanded = false },
-			modifier = Modifier.fillMaxWidth()
-		) {
-			languages.forEach {
-				DropdownMenuItem(onClick = {
-					val lang = if (it == languages[0]) Locale("en") else Locale("es")
-					conf.apply {
-						setLocale(lang)
-						setLayoutDirection(lang)
-						context.resources.updateConfiguration(
-							this,
-							context.resources.displayMetrics
-						)
-					}
-					(context as Activity).recreate()
-					isExpanded = false
-					selectedLanguage = it
-				}) {
-					Text(text = it)
-				}
-			}
-		}
-	}
 }
